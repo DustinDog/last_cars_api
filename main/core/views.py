@@ -44,3 +44,8 @@ class ProtectedView(APIView):
     def get(self, request):
         data = {"result": True}
         return Response(data)
+
+
+class Healthcheck(APIView):
+    def get(self, request):
+        return Response([], status=status.HTTP_200_OK)
