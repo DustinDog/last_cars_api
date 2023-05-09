@@ -8,14 +8,25 @@ services:
       - main
     depends_on:
       - db
+    volumes:
+      - .:/web
     command: python main/manage.py runserver 0.0.0.0:8000
   db:
     image: postgres
     restart: always
     networks:
       - main
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
     environment:
-      POSTGRES_PASSWORD: example
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+
+volumes:
+  web:
 
 networks:
   main:
