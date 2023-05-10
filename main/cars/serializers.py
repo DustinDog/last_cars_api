@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from cars.models import Brand, Model, Car, CarImage
+from core.serializers import UserSerializer
 
 
 class BrandSerializer(serializers.ModelSerializer):
@@ -17,19 +18,21 @@ class ModelSerializer(serializers.ModelSerializer):
 """Serializer for car itself"""
 
 
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CarImage
+        fields = ("id", "image")
+
+
 class CarSerializer(serializers.ModelSerializer):
     brand = BrandSerializer()
     model = ModelSerializer()
+    user = UserSerializer()
+    images = ImageSerializer(read_only=True, many=True)
 
     class Meta:
         model = Car
         fields = "__all__"
-
-
-class ImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CarImage
-        fields = ("car", "image")
 
 
 """serializer for creating car"""
@@ -49,7 +52,6 @@ class CarCreateSerializer(serializers.ModelSerializer):
             "description",
             "brand",
             "model",
-            "is_on_sale",
             "engine",
             "price",
             "mileage",
@@ -59,10 +61,10 @@ class CarCreateSerializer(serializers.ModelSerializer):
             "transmission",
             "images",
             "uploaded_images",
-            "user",
         ]
 
     def create(self, validated_data):
+        user = self.context["request"].user
         uploaded_images = validated_data.pop("uploaded_images")
         if len(uploaded_images) < 3:
             raise serializers.ValidationError(
@@ -70,7 +72,7 @@ class CarCreateSerializer(serializers.ModelSerializer):
             )
         validated_data["is_on_sale"] = True
 
-        car = Car.objects.create(**validated_data)
+        car = Car.objects.create(**validated_data, user=user)
         for image in uploaded_images:
             CarImage.objects.create(car=car, image=image)
         return car

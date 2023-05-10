@@ -11,6 +11,7 @@ services:
     volumes:
       - .:/code
     command: python main/manage.py runserver 0.0.0.0:8000
+    container_name: api
   db:
     image: postgres
     restart: always
@@ -24,6 +25,7 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
+    container_name: db
 
 volumes:
   web:

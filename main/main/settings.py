@@ -46,9 +46,7 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Cars API",
     "DESCRIPTION": "The Cars API is a powerful tool that allows users to add, edit, view, and manage cars through a RESTful API interface. With this API, users can create and manage their own profiles, as well as add and edit cars with detailed information such as make, model, year, color, and more. The API also supports user authentication and authorization, ensuring that only authorized users can access and modify the data.Through this API, users can perform a wide range of tasks, from creating and deleting cars, to searching for specific cars by various attributes. The API also includes robust error handling and data validation, ensuring that all data entered is accurate and properly formatted.",
     "VERSION": "1.0.0",
-    "SWAGGER_UI_DIST": "SIDECAR",
-    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
-    "REDOC_DIST": "SIDECAR",
+    "COMPONENT_SPLIT_REQUEST": True,
 }
 
 SIMPLE_JWT = {

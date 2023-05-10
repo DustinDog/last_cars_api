@@ -1,16 +1,15 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework.generics import ListAPIView, DestroyAPIView, ListCreateAPIView
-from rest_framework import status
 
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import (
     IsAuthenticated,
-    AllowAny,
     IsAuthenticatedOrReadOnly,
 )
 
 from cars.permissions import IsCarOwner
-from cars.models import Brand, Model, Car, CarImage
+from cars.models import Brand, Model, Car
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from cars.filters import CarFilter, ModelFilter
 
@@ -24,8 +23,7 @@ from cars.serializers import (
 
 
 class BrandListAPIView(ListAPIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
 
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
@@ -35,8 +33,7 @@ class BrandListAPIView(ListAPIView):
 
 
 class ModelListAPIView(ListAPIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
 
     queryset = Model.objects.all()
     serializer_class = ModelSerializer
@@ -45,16 +42,8 @@ class ModelListAPIView(ListAPIView):
     filterset_class = ModelFilter
 
 
-class CarListAllAPIView(ListAPIView):
-    queryset = Car.objects.all().select_related("brand", "model")
-    serializer_class = CarSerializer
-
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = CarFilter
-
-
 class CarListCreateAPIView(ListCreateAPIView):
-    queryset = Car.objects.filter(is_on_sale=True).select_related("brand", "model")
+    queryset = Car.objects.available().select_related("brand", "model")
     serializer_class = CarSerializer
 
     authentication_classes = [JWTAuthentication]
@@ -63,25 +52,17 @@ class CarListCreateAPIView(ListCreateAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = CarFilter
 
+    @extend_schema(request=CarCreateSerializer, responses=CarSerializer)
     def post(self, *args, **kwargs):
-        request_data = self.request.data.copy()
-        request_data["user"] = self.request.user.pk
+        serializer = CarCreateSerializer(
+            data=self.request.data, context={"request": self.request}
+        )
+        serializer.is_valid(raise_exception=True)
 
-        serializer = CarCreateSerializer(data=request_data)
-
-        if serializer.is_valid(raise_exception=True):
-            instance = serializer.save()
+        instance = serializer.save()
         return Response(CarSerializer(instance).data)
 
 
 class DeleteCarByIdAPIView(DestroyAPIView):
     queryset = Car.objects.all()
     permission_classes = [IsAuthenticated, IsCarOwner]
-
-    def delete(self, request, *args, pk):
-        instance = self.destroy(request, *args, pk)
-
-        return Response(
-            {"successfully delete car": {pk}},
-            status=status.HTTP_204_NO_CONTENT,
-        )

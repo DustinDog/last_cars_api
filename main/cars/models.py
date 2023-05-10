@@ -32,6 +32,11 @@ class Model(models.Model):
         verbose_name_plural = "Models"
 
 
+class CarManager(models.Manager):
+    def available(self) -> models.QuerySet["Car"]:
+        return self.filter(is_on_sale=True)
+
+
 class Car(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=500)
@@ -48,6 +53,8 @@ class Car(models.Model):
     interior_color = models.CharField(max_length=150, blank=True, null=True)
     fuel_type = models.CharField(max_length=150, blank=True, null=True)
     transmission = models.CharField(max_length=150, blank=True, null=True)
+
+    objects = CarManager()
 
     def __str__(self):
         return f"{self.brand.name} {self.model.name} ({self.is_on_sale})"
