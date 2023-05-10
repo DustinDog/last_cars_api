@@ -1,6 +1,5 @@
-from urllib import request
-from rest_framework.generics import ListAPIView, CreateAPIView, ListCreateAPIView
-from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView, DestroyAPIView, ListCreateAPIView
+from rest_framework import status
 
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
@@ -9,6 +8,8 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticatedOrReadOnly,
 )
+
+from cars.permissions import IsCarOwner
 from cars.models import Brand, Model, Car, CarImage
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from cars.filters import CarFilter, ModelFilter
@@ -71,3 +72,16 @@ class CarListCreateAPIView(ListCreateAPIView):
         if serializer.is_valid(raise_exception=True):
             instance = serializer.save()
         return Response(CarSerializer(instance).data)
+
+
+class DeleteCarByIdAPIView(DestroyAPIView):
+    queryset = Car.objects.all()
+    permission_classes = [IsAuthenticated, IsCarOwner]
+
+    def delete(self, request, *args, pk):
+        instance = self.destroy(request, *args, pk)
+
+        return Response(
+            {"successfully delete car": {pk}},
+            status=status.HTTP_204_NO_CONTENT,
+        )
