@@ -6,8 +6,8 @@ class Command(BaseCommand):
     def handle(self, **options):
         Car.objects.all().delete()
 
-        Model.objects.filter(car__isnull=True).delete()
+        Model.objects.all().delete()
 
-        Brand.objects.filter(model__isnull=True).delete()
+        Brand.objects.all().delete()
 
         print("Successfully deleted all instances in the database")

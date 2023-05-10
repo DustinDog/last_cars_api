@@ -10,12 +10,14 @@ from cars.views import (
     ModelListAPIView,
     CarListAllAPIView,
     CarListCreateAPIView,
+    DeleteCarByIdAPIView,
 )
 
 
 urlpatterns = [
     path("healthcheck", Healthcheck.as_view()),
     path("api/admin/", admin.site.urls),
+    path("api/cars/<int:pk>", DeleteCarByIdAPIView.as_view(), name="delete_car"),
     path("api/user/create/", CreateUserView.as_view(), name="create_user"),
     path("api/user/login/", LoginView.as_view(), name="login"),
     path("api/brands/", BrandListAPIView.as_view(), name="brand_list"),

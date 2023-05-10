@@ -33,10 +33,11 @@ class Command(BaseCommand):
                 brand=brand,
             )
             user, created = User.objects.get_or_create(
-                email="user@user.com",
+                email="gen@gen.com",
             )
             if created:
                 user.set_password("password")
+                user.save()
             Car.objects.create(
                 title="BMV",
                 description="Nice new car",
