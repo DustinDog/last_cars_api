@@ -1,16 +1,19 @@
 from drf_spectacular.utils import extend_schema
-from rest_framework.generics import ListAPIView, DestroyAPIView, ListCreateAPIView
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import (
+    ListAPIView,
+)
 
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import (
     IsAuthenticated,
     IsAuthenticatedOrReadOnly,
+    SAFE_METHODS,
 )
 
 from cars.permissions import IsCarOwner
 from cars.models import Brand, Model, Car
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from cars.filters import CarFilter, ModelFilter
 
 
@@ -18,7 +21,7 @@ from cars.serializers import (
     BrandSerializer,
     ModelSerializer,
     CarSerializer,
-    CarCreateSerializer,
+    CarCreateUpdateSerializer,
 )
 
 
@@ -42,27 +45,38 @@ class ModelListAPIView(ListAPIView):
     filterset_class = ModelFilter
 
 
-class CarListCreateAPIView(ListCreateAPIView):
-    queryset = Car.objects.available().select_related("brand", "model")
-    serializer_class = CarSerializer
-
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly]
-
+class CarViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = CarFilter
+    queryset = Car.objects.available().select_related("brand", "model")
 
-    @extend_schema(request=CarCreateSerializer, responses=CarSerializer)
-    def post(self, *args, **kwargs):
-        serializer = CarCreateSerializer(
-            data=self.request.data, context={"request": self.request}
-        )
+    def get_serializer_class(self):
+        if self.action in SAFE_METHODS:
+            return CarCreateUpdateSerializer
+        else:
+            return CarSerializer
+
+    def get_permissions(self):
+        if self.request.method in SAFE_METHODS:
+            self.permission_classes = [IsAuthenticatedOrReadOnly]
+        else:
+            self.permission_classes = [IsAuthenticated, IsCarOwner]
+
+        return super().get_permissions()
+
+    @extend_schema(request=CarCreateUpdateSerializer, responses=CarSerializer)
+    def create(self, *args, **kwargs):
+        serializer = self.get_serializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)
-
         instance = serializer.save()
         return Response(CarSerializer(instance).data)
 
+    @extend_schema(request=CarCreateUpdateSerializer, responses=CarSerializer)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        obj = self.get_object()
+        serializer = self.get_serializer(obj, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
 
-class DeleteCarByIdAPIView(DestroyAPIView):
-    queryset = Car.objects.all()
-    permission_classes = [IsAuthenticated, IsCarOwner]
+        return Response(CarSerializer(instance).data)
