@@ -15,9 +15,6 @@ class ModelSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-"""Serializer for car itself"""
-
-
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarImage
@@ -32,14 +29,26 @@ class CarSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Car
-        fields = "__all__"
+        fields = [
+            "id",
+            "is_on_sale",
+            "title",
+            "description",
+            "brand",
+            "model",
+            "user",
+            "engine",
+            "price",
+            "mileage",
+            "exterior_color",
+            "interior_color",
+            "fuel_type",
+            "transmission",
+            "images",
+        ]
 
 
-"""serializer for creating car"""
-
-
-class CarCreateSerializer(serializers.ModelSerializer):
-    images = ImageSerializer(read_only=True, many=True)
+class CarCreateUpdateSerializer(serializers.ModelSerializer):
     uploaded_images = serializers.ListField(
         child=serializers.ImageField(allow_empty_file=False, use_url=False),
         write_only=True,
@@ -59,7 +68,6 @@ class CarCreateSerializer(serializers.ModelSerializer):
             "interior_color",
             "fuel_type",
             "transmission",
-            "images",
             "uploaded_images",
         ]
 
