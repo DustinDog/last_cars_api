@@ -51,10 +51,10 @@ class CarViewSet(ModelViewSet):
     queryset = Car.objects.available().select_related("brand", "model")
 
     def get_serializer_class(self):
-        if self.action in SAFE_METHODS:
-            return CarCreateUpdateSerializer
-        else:
+        if self.request.method in SAFE_METHODS:
             return CarSerializer
+        else:
+            return CarCreateUpdateSerializer
 
     def get_permissions(self):
         if self.request.method in SAFE_METHODS:

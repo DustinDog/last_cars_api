@@ -31,6 +31,8 @@ class CarSerializer(serializers.ModelSerializer):
         model = Car
         fields = [
             "id",
+            "year",
+            "condition",
             "is_on_sale",
             "title",
             "description",
@@ -58,6 +60,8 @@ class CarCreateUpdateSerializer(serializers.ModelSerializer):
         model = Car
         fields = [
             "title",
+            "year",
+            "condition",
             "description",
             "brand",
             "model",
