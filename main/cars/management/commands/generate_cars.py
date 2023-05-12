@@ -43,6 +43,8 @@ class Command(BaseCommand):
                 description="Nice new car",
                 brand=brand,
                 model=model,
+                year=2015,
+                condition="new",
                 price=f"{fake.pyint()}USD",
                 mileage=f"{fake.pyint()}kilometers",
                 exterior_color=fake.safe_color_name(),

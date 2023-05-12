@@ -1,6 +1,16 @@
 from django.db import models
 from cars.utils import build_path
 from django.contrib.auth import get_user_model
+import enum
+
+
+class ConditionChoices(enum.Enum):
+    new = "New"
+    used = "Used"
+
+    @classmethod
+    def choices(cls):
+        return tuple((i.name, i.value) for i in cls)
 
 
 User = get_user_model()
@@ -43,9 +53,9 @@ class Car(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="cars")
     model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name="cars")
     price = models.CharField(max_length=150)
+    year = models.PositiveIntegerField()
+    condition = models.CharField(max_length=50, choices=ConditionChoices.choices())
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cars")
-
-    """Not required"""
     is_on_sale = models.BooleanField(default=True)
     engine = models.CharField(max_length=50, blank=True, null=True)
     mileage = models.CharField(max_length=150, blank=True, null=True)
