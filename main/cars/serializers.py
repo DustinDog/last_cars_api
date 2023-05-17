@@ -6,13 +6,13 @@ from core.serializers import UserSerializer
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
-        fields = "__all__"
+        fields = ["id", "name", "headquarters_country"]
 
 
 class ModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Model
-        fields = "__all__"
+        fields = ["id", "name", "body_style", "brand"]
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -82,7 +82,7 @@ class CarCreateUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 f"You uploaded {len(uploaded_images)} images.Please upload at least 3 images."
             )
-        validated_data["is_on_sale"] = True
+        validated_data["is_on_sale"] = False
 
         car = Car.objects.create(**validated_data, user=user)
         for image in uploaded_images:

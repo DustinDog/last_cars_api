@@ -30,7 +30,6 @@ class Brand(models.Model):
 
 class Model(models.Model):
     name = models.CharField(max_length=50)
-    year_of_issue = models.PositiveIntegerField()
     body_style = models.CharField(max_length=50)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
 
@@ -52,13 +51,13 @@ class Car(models.Model):
     description = models.CharField(max_length=500)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="cars")
     model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name="cars")
-    price = models.CharField(max_length=150)
+    price = models.PositiveIntegerField()
     year = models.PositiveIntegerField()
     condition = models.CharField(max_length=50, choices=ConditionChoices.choices())
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cars")
     is_on_sale = models.BooleanField(default=True)
     engine = models.CharField(max_length=50, blank=True, null=True)
-    mileage = models.CharField(max_length=150, blank=True, null=True)
+    mileage = models.PositiveIntegerField(blank=True, null=True, default=0)
     exterior_color = models.CharField(max_length=150, blank=True, null=True)
     interior_color = models.CharField(max_length=150, blank=True, null=True)
     fuel_type = models.CharField(max_length=150, blank=True, null=True)

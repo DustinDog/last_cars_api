@@ -1,59 +1,76 @@
+import os
 from django.core.management.base import BaseCommand
-from faker import Faker
-from faker_vehicle import VehicleProvider
-from cars.models import Brand, Model, Car
-
+import random
+from cars.models import Brand, Model, Car, CarImage
 from django.contrib.auth import get_user_model
+from fixtures.car_examples_dict import CAR_SAMPLE
+from django.core.files import File
+from django.conf import settings
+
 
 User = get_user_model()
 
 
 class Command(BaseCommand):
-    def add_arguments(self, parser):
-        parser.add_argument("count", type=int)
-
     def handle(self, **options):
-        fake = Faker()
-        fake.add_provider(VehicleProvider)
-        count = options["count"]
+        brand_list = []
+        model_list = []
+        car_list = []
+        car_image_list = []
+
         fuels = ["gasoline", "diesel", "electric", "hybrid"]
         transmissions = ["automatic", "manual"]
         engines = ["2.0L", "1.4L", "3.0L", "5.0L"]
+        vehicles = CAR_SAMPLE
+        colors = ["red", "black", "white", "yellow"]
+        user, created = User.objects.get_or_create(
+            email="gen@gen.com",
+        )
+        if created:
+            user.set_password("password")
+            user.save()
 
-        for _ in range(count):
-            brand = Brand.objects.create(
-                name=fake.vehicle_make(),
-                headquarters_country=fake.country(),
+        for vehicle in vehicles:
+            brand = Brand(
+                name=vehicle["brand"],
+                headquarters_country=vehicle["country"],
             )
+            brand_list.append(brand)
+            for vehicle_model in vehicle["models"]:
+                model = Model(
+                    name=vehicle_model["name"],
+                    body_style=vehicle_model["body_type"],
+                    brand=brand,
+                )
+                model_list.append(model)
 
-            model = Model.objects.create(
-                name=fake.vehicle_model(),
-                year_of_issue=fake.machine_year(),
-                body_style=fake.vehicle_category(),
-                brand=brand,
-            )
-            user, created = User.objects.get_or_create(
-                email="gen@gen.com",
-            )
-            if created:
-                user.set_password("password")
-                user.save()
-            Car.objects.create(
-                title="BMV",
-                description="Nice new car",
-                brand=brand,
-                model=model,
-                year=2015,
-                condition="new",
-                price=f"{fake.pyint()}USD",
-                mileage=f"{fake.pyint()}kilometers",
-                exterior_color=fake.safe_color_name(),
-                interior_color=fake.safe_color_name(),
-                fuel_type=fake.random_element(elements=fuels),
-                transmission=fake.random_element(elements=transmissions),
-                engine=fake.random_element(elements=engines),
-                is_on_sale=fake.boolean(),
-                user=user,
-            )
+                car = Car(
+                    title="Car title",
+                    description="Car description",
+                    brand=brand,
+                    model=model,
+                    year=random.randint(1990, 2023),
+                    condition=random.choice(["new", "used"]),
+                    price=random.randint(1000, 10000),
+                    mileage=random.randint(10, 100) * 100,
+                    exterior_color=random.choice(colors),
+                    interior_color=random.choice(colors),
+                    fuel_type=random.choice(fuels),
+                    transmission=random.choice(transmissions),
+                    engine=random.choice(engines),
+                    is_on_sale=random.choice([True, False]),
+                    user=user,
+                )
+                car_list.append(car)
 
-        print(f"Successfully generated {count} cars")
+                filename = os.path.join(settings.BASE_DIR, "static/images/Cruiser.jpg")
+
+                image_file = File(open(filename, "rb"), "car.jpg")
+                car_image = CarImage(car=car, image=image_file)
+                car_image_list.append(car_image)
+
+        Brand.objects.bulk_create(brand_list)
+        Model.objects.bulk_create(model_list)
+        Car.objects.bulk_create(car_list)
+        CarImage.objects.bulk_create(car_image_list)
+        print(f"Successfully generated 15 cars")
