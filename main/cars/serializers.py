@@ -22,6 +22,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class CarSerializer(serializers.ModelSerializer):
+    is_favourite = serializers.SerializerMethodField()
     brand = BrandSerializer()
     model = ModelSerializer()
     user = UserSerializer()
@@ -31,6 +32,7 @@ class CarSerializer(serializers.ModelSerializer):
         model = Car
         fields = [
             "id",
+            "is_favourite",
             "year",
             "condition",
             "is_on_sale",
@@ -48,6 +50,10 @@ class CarSerializer(serializers.ModelSerializer):
             "transmission",
             "images",
         ]
+
+    def get_is_favourite(self, obj):
+        user = self.context["request"].user
+        return obj in user.favourite_cars.all()
 
 
 class CarCreateUpdateSerializer(serializers.ModelSerializer):
