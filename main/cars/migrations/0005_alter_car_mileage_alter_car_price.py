@@ -11,10 +11,12 @@ def remove_letters_from_price(apps, schema_editor):
         string_without_letters = re.sub("[a-zA-Z]+", "", string_with_letters)
         try:
             car.price = int(string_without_letters)
+            car.mileage = re.sub("[a-zA-Z]+", "", car.mileage)
             car.save()
         except Exception as e:
             print("error: ", str(e))
             car.price = 1000
+            car.mileage = 10000
             car.save()
 
 
