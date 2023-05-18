@@ -1,8 +1,10 @@
 from drf_spectacular.utils import extend_schema
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import (
-    ListAPIView,
-)
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
+from rest_framework import status
+from rest_framework.decorators import action
+
 
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
@@ -80,3 +82,48 @@ class CarViewSet(ModelViewSet):
         instance = serializer.save()
 
         return Response(CarSerializer(instance).data)
+
+
+class FavouritesViewSet(ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = Car.objects.available()
+    serializer_class = CarSerializer
+
+    @action(methods=["GET"], detail=True, url_path="add")
+    def add_to_favourites(self, request, *args, **kwargs):
+        car = self.get_object()
+
+        user = request.user
+        if car not in user.favourite_cars.all():
+            user.favourite_cars.add(car)
+            return Response(
+                {"message": "Car added successfully"}, status=status.HTTP_200_OK
+            )
+
+        return Response(
+            {"message": "Car already in favourites"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    @action(methods=["GET"], detail=True, url_path="remove")
+    def remove_from_favourites(self, request, *args, **kwargs):
+        car = self.get_object()
+        user = request.user
+
+        if car in user.favourite_cars.all():
+            user.favourite_cars.remove(car)
+            return Response(
+                {"message": "Successfully removed car from favourites"},
+                status=status.HTTP_204_NO_CONTENT,
+            )
+
+        return Response(
+            {"message": "There is no such car in favourites"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    @action(methods=["GET"], detail=False, url_path="list")
+    def list_of_favourites(self, request, *args, **kwargs):
+        user = request.user
+        favourites = user.favourite_cars.all()
+        serializer = self.get_serializer(favourites, many=True)
+        return Response(serializer.data)

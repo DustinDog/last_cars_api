@@ -26,12 +26,12 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
-    "core",
-    "cars",
     "django_filters",
     "drf_spectacular",
     "drf_spectacular_sidecar",
     "debug_toolbar",
+    "cars",
+    "core",
 ]
 
 REST_FRAMEWORK = {

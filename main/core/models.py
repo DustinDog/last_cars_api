@@ -40,6 +40,7 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=30, blank=True, null=True)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
+    favourite_cars = models.ManyToManyField("cars.Car", related_name="users")
 
     objects = UserManager()
 
@@ -52,3 +53,11 @@ class User(AbstractUser):
     class Meta:
         verbose_name = _("user")
         verbose_name_plural = _("users")
+
+    def add_to_favourites(self, car) -> None:
+        self.favourite_cars.add(car)
+        self.save()
+
+    def remove_from_favourites(self, car) -> None:
+        self.favourite_cars.remove(car)
+        self.save()
