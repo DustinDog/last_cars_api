@@ -31,7 +31,7 @@ class Brand(models.Model):
 class Model(models.Model):
     name = models.CharField(max_length=50)
     body_style = models.CharField(max_length=50)
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="models")
 
     def __str__(self):
         return self.name
