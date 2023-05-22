@@ -15,7 +15,7 @@ from rest_framework.permissions import (
 
 from cars.permissions import IsCarOwner
 from cars.models import Brand, Model, Car
-from cars.filters import CarFilter, ModelFilter
+from cars.filters import CarFilter
 
 
 from cars.serializers import (
@@ -30,16 +30,10 @@ class BrandListAPIView(ListAPIView):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
 
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["name", "headquarters_country"]
-
 
 class ModelListAPIView(ListAPIView):
     queryset = Model.objects.all()
     serializer_class = ModelSerializer
-
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = ModelFilter
 
 
 class CarViewSet(ModelViewSet):

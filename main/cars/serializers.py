@@ -3,16 +3,18 @@ from cars.models import Brand, Model, Car, CarImage
 from core.serializers import UserSerializer
 
 
-class BrandSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Brand
-        fields = ["id", "name", "headquarters_country"]
-
-
 class ModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Model
         fields = ["id", "name", "body_style", "brand"]
+
+
+class BrandSerializer(serializers.ModelSerializer):
+    models = ModelSerializer(many=True)
+
+    class Meta:
+        model = Brand
+        fields = ["id", "name", "headquarters_country", "models"]
 
 
 class ImageSerializer(serializers.ModelSerializer):
