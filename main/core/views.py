@@ -1,13 +1,16 @@
 from rest_framework import generics, permissions
-from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-
+from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from core.serializers import UserCreateSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from cars.models import Car
+from cars.serializers import CarSerializer
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -36,16 +39,16 @@ class LoginView(TokenObtainPairView):
     serializer_class = TokenObtainPairSerializer
 
 
-class ProtectedView(APIView):
-    authentication_classes = [JWTAuthentication]
-
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request):
-        data = {"result": True}
-        return Response(data)
-
-
 class Healthcheck(APIView):
     def get(self, request):
         return Response([], status=status.HTTP_200_OK)
+
+
+class MyListingsViewSet(ReadOnlyModelViewSet):
+    queryset = Car.objects.all().select_related("brand", "model")
+    serializer_class = CarSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(user=self.request.user)
+        return queryset

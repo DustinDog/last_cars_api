@@ -1,9 +1,16 @@
 from django.urls import path
+from rest_framework import routers
 
-from core.views import CreateUserView, LoginView, Healthcheck
+
+from core.views import CreateUserView, LoginView, MyListingsViewSet
+
+
+router = routers.SimpleRouter()
+router.register(r"my-listings", MyListingsViewSet)
+
 
 urlpatterns = [
-    path("healthcheck/", Healthcheck.as_view()),
-    path("user/create/", CreateUserView.as_view(), name="create_user"),
-    path("user/login/", LoginView.as_view(), name="login"),
+    path("create/", CreateUserView.as_view(), name="create_user"),
+    path("login/", LoginView.as_view(), name="login"),
 ]
+urlpatterns.extend(router.urls)

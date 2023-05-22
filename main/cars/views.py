@@ -1,6 +1,5 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework import status
 from rest_framework.decorators import action
@@ -28,8 +27,6 @@ from cars.serializers import (
 
 
 class BrandListAPIView(ListAPIView):
-    permission_classes = []
-
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
 
@@ -38,8 +35,6 @@ class BrandListAPIView(ListAPIView):
 
 
 class ModelListAPIView(ListAPIView):
-    permission_classes = []
-
     queryset = Model.objects.all()
     serializer_class = ModelSerializer
 
@@ -67,11 +62,13 @@ class CarViewSet(ModelViewSet):
         return super().get_permissions()
 
     @extend_schema(request=CarCreateUpdateSerializer, responses=CarSerializer)
-    def create(self, *args, **kwargs):
-        serializer = self.get_serializer(data=self.request.data)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
-        return Response(CarSerializer(instance).data)
+        return Response(
+            CarSerializer(instance, context=self.get_serializer_context()).data
+        )
 
     @extend_schema(request=CarCreateUpdateSerializer, responses=CarSerializer)
     def update(self, request, *args, **kwargs):
@@ -81,7 +78,9 @@ class CarViewSet(ModelViewSet):
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
 
-        return Response(CarSerializer(instance).data)
+        return Response(
+            CarSerializer(instance, context=self.get_serializer_context()).data
+        )
 
 
 class FavouritesViewSet(ReadOnlyModelViewSet):
@@ -95,7 +94,7 @@ class FavouritesViewSet(ReadOnlyModelViewSet):
 
         user = request.user
         if car not in user.favourite_cars.all():
-            user.favourite_cars.add(car)
+            user.add_to_favourites(car)
             return Response(
                 {"message": "Car added successfully"}, status=status.HTTP_200_OK
             )
@@ -110,7 +109,7 @@ class FavouritesViewSet(ReadOnlyModelViewSet):
         user = request.user
 
         if car in user.favourite_cars.all():
-            user.favourite_cars.remove(car)
+            user.remove_from_favourites(car)
             return Response(
                 {"message": "Successfully removed car from favourites"},
                 status=status.HTTP_204_NO_CONTENT,

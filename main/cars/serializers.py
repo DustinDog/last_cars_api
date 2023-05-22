@@ -53,6 +53,8 @@ class CarSerializer(serializers.ModelSerializer):
 
     def get_is_favourite(self, obj):
         user = self.context["request"].user
+        if user.is_anonymous:
+            return False
         return obj in user.favourite_cars.all()
 
 
