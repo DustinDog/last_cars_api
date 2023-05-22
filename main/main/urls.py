@@ -1,4 +1,5 @@
 from django.urls import path, include
+from core.views import Healthcheck
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
@@ -6,8 +7,9 @@ from drf_spectacular.views import (
 from django.contrib import admin
 
 api_urls = [
-    path("", include("core.urls")),
-    path("cars/", include("cars.urls")),
+    path("healthcheck/", Healthcheck.as_view()),
+    path("user/", include("core.urls")),
+    path("", include("cars.urls")),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "docs/",
