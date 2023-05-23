@@ -62,6 +62,8 @@ class Car(models.Model):
     interior_color = models.CharField(max_length=150, blank=True, null=True)
     fuel_type = models.CharField(max_length=150, blank=True, null=True)
     transmission = models.CharField(max_length=150, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     objects = CarManager()
 
