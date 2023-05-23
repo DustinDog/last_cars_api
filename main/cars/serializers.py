@@ -34,14 +34,16 @@ class CarSerializer(serializers.ModelSerializer):
         model = Car
         fields = [
             "id",
+            "brand",
+            "model",
+            "created_at",
+            "updated_at",
             "is_favourite",
             "year",
             "condition",
             "is_on_sale",
             "title",
             "description",
-            "brand",
-            "model",
             "user",
             "engine",
             "price",

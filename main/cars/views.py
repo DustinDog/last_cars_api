@@ -7,6 +7,8 @@ from rest_framework.decorators import action
 
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
+
 from rest_framework.permissions import (
     IsAuthenticated,
     IsAuthenticatedOrReadOnly,
@@ -37,8 +39,11 @@ class ModelListAPIView(ListAPIView):
 
 
 class CarViewSet(ModelViewSet):
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_class = CarFilter
+    ordering_fields = ["price", "year", "created_at"]
+    ordering = ["-created_at"]
+
     queryset = Car.objects.available().select_related("brand", "model")
 
     def get_serializer_class(self):
