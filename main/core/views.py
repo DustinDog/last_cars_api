@@ -11,6 +11,32 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from cars.models import Car
 from cars.serializers import CarSerializer
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth import get_user_model
+from django.urls import reverse
+from django.conf import settings
+from core.send_email import send_email_varification
+
+User = get_user_model()
+
+
+class ActivateUserView(APIView):
+    def get(self, request):
+        user = User.objects.get(pk=request.GET.get("user_id"))
+
+        if not default_token_generator.check_token(
+            user, request.GET.get("confirmation_token")
+        ):
+            return Response(
+                {
+                    "message": "Token is invalid or expired. Please request another confirmation email by signing in."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        user.email_verified = True
+
+        user.save()
+        return Response({"message": "Email successfully confirmed"})
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -23,13 +49,16 @@ class CreateUserView(generics.CreateAPIView):
         instance = serializer.save()
         headers = self.get_success_headers(serializer.data)
 
+        activation_link = request.build_absolute_uri(reverse("activate"))
+        send_email_varification(activation_link, instance)
+
         refresh = RefreshToken.for_user(instance)
         tokens = {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
         }
         return Response(
-            {**serializer.data, **tokens},
+            {"message": "Check your email", **serializer.data, **tokens},
             status=status.HTTP_201_CREATED,
             headers=headers,
         )

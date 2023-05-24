@@ -41,6 +41,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     favourite_cars = models.ManyToManyField("cars.Car", related_name="users")
+    email_verified = models.BooleanField(default=False)
 
     objects = UserManager()
 

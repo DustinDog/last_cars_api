@@ -130,3 +130,16 @@ MEDIA_URL = "/media/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CSRF_TRUSTED_ORIGINS = ["https://lobster-app-ku5vy.ondigitalocean.app"]
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "vasyl.ihnat65@gmail.com"
+EMAIL_HOST_PASSWORD = "luplprvtrxbtrqif"
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+DEFAULT_FROM_EMAIL = "vasyl.ihnat65@gmail.com"
+
+PASSWORD_RESET_TIMEOUT = 60 * 60

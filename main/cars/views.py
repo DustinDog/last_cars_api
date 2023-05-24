@@ -44,6 +44,7 @@ class CarViewSet(ModelViewSet):
     ordering_fields = ["price", "year", "created_at"]
     ordering = ["-created_at"]
 
+
     queryset = Car.objects.available().select_related("brand", "model")
 
     def get_serializer_class(self):
