@@ -9,6 +9,12 @@ class ModelSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "body_style", "brand"]
 
 
+class CarBrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = ["id", "name", "headquarters_country"]
+
+
 class BrandSerializer(serializers.ModelSerializer):
     models = ModelSerializer(many=True)
 
@@ -25,7 +31,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
 class CarSerializer(serializers.ModelSerializer):
     is_favourite = serializers.SerializerMethodField()
-    brand = BrandSerializer()
+    brand = CarBrandSerializer()
     model = ModelSerializer()
     user = UserSerializer()
     images = ImageSerializer(read_only=True, many=True)

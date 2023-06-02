@@ -45,3 +45,16 @@ class UserCreateSerializer(serializers.ModelSerializer):
             "confirmed_password",
             "password",
         ]
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "phone_number",
+            "favourite_cars",
+        )

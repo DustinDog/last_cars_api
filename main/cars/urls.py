@@ -5,13 +5,11 @@ from cars.views import (
     BrandListAPIView,
     ModelListAPIView,
     CarViewSet,
-    FavouritesViewSet,
 )
 
 
 router = routers.SimpleRouter()
 
-router.register(r"cars/favourites", FavouritesViewSet)
 router.register(r"cars", CarViewSet)
 
 

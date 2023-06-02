@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from core.serializers import UserCreateSerializer
+from core.serializers import UserCreateSerializer, UserProfileSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -16,6 +16,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.conf import settings
 from core.send_email import send_email_varification
+from rest_framework.decorators import action
 
 User = get_user_model()
 
@@ -73,11 +74,60 @@ class Healthcheck(APIView):
         return Response([], status=status.HTTP_200_OK)
 
 
-class MyListingsViewSet(ReadOnlyModelViewSet):
-    queryset = Car.objects.all().select_related("brand", "model")
-    serializer_class = CarSerializer
+class FavouritesViewSet(ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
+    queryset = Car.objects.available().select_related("brand", "model")
+    serializer_class = CarSerializer
 
-    def get_queryset(self):
-        queryset = super().get_queryset().filter(user=self.request.user)
-        return queryset
+    @action(methods=["GET"], detail=True, url_path="add")
+    def add_to_favourites(self, request, *args, **kwargs):
+        car = self.get_object()
+
+        user = request.user
+        if car not in user.favourite_cars.all():
+            user.add_to_favourites(car)
+            return Response(
+                {"message": "Car added successfully"}, status=status.HTTP_200_OK
+            )
+
+        return Response(
+            {"message": "Car already in favourites"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    @action(methods=["GET"], detail=True, url_path="remove")
+    def remove_from_favourites(self, request, *args, **kwargs):
+        car = self.get_object()
+        user = request.user
+
+        if car in user.favourite_cars.all():
+            user.remove_from_favourites(car)
+            return Response(
+                {"message": "Successfully removed car from favourites"},
+                status=status.HTTP_204_NO_CONTENT,
+            )
+
+        return Response(
+            {"message": "There is no such car in favourites"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    @action(methods=["GET"], detail=False, url_path="list")
+    def list_of_favourites(self, request, *args, **kwargs):
+        user = request.user
+
+        favourites = (
+            user.favourite_cars.all()
+            .select_related("brand", "model", "user")
+            .prefetch_related("images")
+        )
+
+        serializer = self.get_serializer(favourites, many=True)
+        return Response(serializer.data)
+
+
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserProfileSerializer
+
+    def get(self, request):
+        return Response(self.serializer_class(request.user).data)
