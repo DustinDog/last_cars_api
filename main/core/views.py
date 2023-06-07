@@ -3,9 +3,16 @@ from rest_framework import generics, permissions
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
+
 from rest_framework import status
-from core.serializers import UserCreateSerializer, UserProfileSerializer
+
+from core.serializers import (
+    UserCreateSerializer,
+    UserProfileSerializer,
+    UpdateUserProfileSerializer,
+    PasswordUpdateSerializer,
+)
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -13,10 +20,11 @@ from cars.models import Car
 from cars.serializers import CarSerializer
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import get_user_model
-from django.urls import reverse
-from django.conf import settings
+from rest_framework.generics import UpdateAPIView
+
 from core.send_email import send_email_varification
 from rest_framework.decorators import action
+from django.urls import reverse
 
 User = get_user_model()
 
@@ -129,5 +137,30 @@ class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserProfileSerializer
 
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return UserProfileSerializer
+        else:
+            return UpdateUserProfileSerializer
+
     def get(self, request):
-        return Response(self.serializer_class(request.user).data)
+        serializer = self.get_serializer_class()
+        return Response(serializer(request.user).data)
+
+    def patch(self, request, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(UserProfileSerializer(request.user).data)
+
+
+class PasswordUpdateView(APIView):
+    def put(self, request):
+        serializer = PasswordUpdateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(request.user, serializer.validated_data)
+            return Response(
+                {"message": "Password chenged successfully!"}, status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

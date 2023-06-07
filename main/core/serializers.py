@@ -58,3 +58,42 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "phone_number",
             "favourite_cars",
         )
+
+
+class UpdateUserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "first_name",
+            "last_name",
+            "phone_number",
+        )
+
+
+class PasswordUpdateSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    new_confirmed_password = serializers.CharField(required=True)
+
+    def update(self, instance, validated_data):
+        old_password = validated_data.get("old_password")
+        new_password = validated_data.get("new_password")
+        new_confirmed_password = validated_data.get("new_confirmed_password")
+
+        if not instance.check_password(old_password):
+            raise serializers.ValidationError("Incorrect old password.")
+
+        if new_password != new_confirmed_password:
+            raise serializers.ValidationError("New password fields do not match.")
+
+        instance.set_password(new_password)
+        instance.save()
+        return instance
+
+    class Meta:
+        model = User
+        fields = (
+            "old_password",
+            "new_password",
+            "new_confirmed_password",
+        )

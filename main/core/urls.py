@@ -8,6 +8,7 @@ from core.views import (
     FavouritesViewSet,
     ActivateUserView,
     UserProfileView,
+    PasswordUpdateView,
 )
 
 
@@ -20,5 +21,6 @@ urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
     path("activate/", ActivateUserView.as_view(), name="activate"),
     path("my-profile/", UserProfileView.as_view(), name="myprofile"),
+    path("update-password/", PasswordUpdateView.as_view(), name="update_password"),
 ]
 urlpatterns.extend(router.urls)
