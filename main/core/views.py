@@ -12,6 +12,7 @@ from core.serializers import (
     UserProfileSerializer,
     UpdateUserProfileSerializer,
     PasswordUpdateSerializer,
+    EmailUpdateSerializer,
 )
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -137,19 +138,14 @@ class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserProfileSerializer
 
-    def get_serializer_class(self):
-        if self.request.method in SAFE_METHODS:
-            return UserProfileSerializer
-        else:
-            return UpdateUserProfileSerializer
-
     def get(self, request):
-        serializer = self.get_serializer_class()
+        serializer = self.serializer_class
         return Response(serializer(request.user).data)
 
     def patch(self, request, *args, **kwargs):
-        serializer_class = self.get_serializer_class()
-        serializer = serializer_class(request.user, data=request.data, partial=True)
+        serializer = UpdateUserProfileSerializer(
+            request.user, data=request.data, partial=True
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(UserProfileSerializer(request.user).data)
@@ -164,3 +160,14 @@ class PasswordUpdateView(APIView):
                 {"message": "Password chenged successfully!"}, status=status.HTTP_200_OK
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EmailUpdateView(UpdateAPIView):
+    def put(self, request, *args, **kwargs):
+        serializer = EmailUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.update(request.user, request.data)
+
+        activation_link = request.build_absolute_uri(reverse("activate"))
+        send_email_varification(activation_link, instance)
+        return Response({"message": "Check your email"}, status=status.HTTP_200_OK)

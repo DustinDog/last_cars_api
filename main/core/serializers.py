@@ -97,3 +97,13 @@ class PasswordUpdateSerializer(serializers.ModelSerializer):
             "new_password",
             "new_confirmed_password",
         )
+
+
+class EmailUpdateSerializer(serializers.Serializer):
+    def update(self, instance, validated_data):
+        if validated_data["new_email"]:
+            instance.email = validated_data["new_email"]
+            instance.email_verified = False
+        instance.save()
+
+        return instance
