@@ -9,6 +9,7 @@ from core.views import (
     ActivateUserView,
     UserProfileView,
     PasswordUpdateView,
+    EmailUpdateView,
 )
 
 
@@ -22,5 +23,6 @@ urlpatterns = [
     path("activate/", ActivateUserView.as_view(), name="activate"),
     path("my-profile/", UserProfileView.as_view(), name="myprofile"),
     path("update-password/", PasswordUpdateView.as_view(), name="update_password"),
+    path("update-email/", EmailUpdateView.as_view(), name="update_email"),
 ]
 urlpatterns.extend(router.urls)
