@@ -1,31 +1,26 @@
-from rest_framework import generics, permissions
-
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
-
-from rest_framework import status
-
-from core.serializers import (
-    UserCreateSerializer,
-    UserProfileSerializer,
-    UpdateUserProfileSerializer,
-    PasswordUpdateSerializer,
-    EmailUpdateSerializer,
-)
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 from cars.models import Car
 from cars.serializers import CarSerializer
-from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth import get_user_model
-from rest_framework.generics import UpdateAPIView
-
 from core.send_email import send_email_varification
-from rest_framework.decorators import action
+from core.serializers import (
+    EmailUpdateSerializer,
+    PasswordUpdateSerializer,
+    UpdateUserProfileSerializer,
+    UserCreateSerializer,
+    UserProfileSerializer,
+)
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
+from rest_framework import generics, permissions, status
+from rest_framework.decorators import action
+from rest_framework.generics import UpdateAPIView
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 User = get_user_model()
 
@@ -68,7 +63,11 @@ class CreateUserView(generics.CreateAPIView):
             "access": str(refresh.access_token),
         }
         return Response(
-            {"message": "Check your email", **serializer.data, **tokens},
+            {
+                "message": "Check your email",
+                **UserProfileSerializer(instance).data,
+                **tokens,
+            },
             status=status.HTTP_201_CREATED,
             headers=headers,
         )

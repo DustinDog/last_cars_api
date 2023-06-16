@@ -1,17 +1,14 @@
+from core.views import (
+    ActivateUserView,
+    CreateUserView,
+    EmailUpdateView,
+    FavouritesViewSet,
+    LoginView,
+    PasswordUpdateView,
+    UserProfileView,
+)
 from django.urls import path
 from rest_framework import routers
-
-
-from core.views import (
-    CreateUserView,
-    LoginView,
-    FavouritesViewSet,
-    ActivateUserView,
-    UserProfileView,
-    PasswordUpdateView,
-    EmailUpdateView,
-)
-
 
 router = routers.SimpleRouter()
 router.register(r"favourites", FavouritesViewSet)

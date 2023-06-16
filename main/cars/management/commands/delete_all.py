@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
-from cars.models import Brand, Model, Car
+
+from cars.models import Brand, Car, Model
 
 
 class Command(BaseCommand):

@@ -1,12 +1,13 @@
 import os
-from django.core.management.base import BaseCommand
 import random
-from cars.models import Brand, Model, Car, CarImage
-from django.contrib.auth import get_user_model
-from fixtures.car_examples_dict import CAR_SAMPLE
-from django.core.files import File
-from django.conf import settings
 
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.files import File
+from django.core.management.base import BaseCommand
+
+from cars.models import Brand, Car, CarImage, Model
+from fixtures.car_examples_dict import CAR_SAMPLE
 
 User = get_user_model()
 
