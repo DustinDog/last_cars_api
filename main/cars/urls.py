@@ -1,12 +1,7 @@
-from rest_framework import routers
 from django.urls import include, path
+from rest_framework import routers
 
-from cars.views import (
-    BrandListAPIView,
-    ModelListAPIView,
-    CarViewSet,
-)
-
+from cars.views import BrandListAPIView, CarViewSet, ModelListAPIView
 
 router = routers.SimpleRouter()
 
