@@ -17,25 +17,33 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
-INSTALLED_APPS = [
+DEFAULT_DJANGO = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+]
+
+PROJECT_APPS = [
+    "cars",
+    "core",
+    "comments",
+]
+
+THIRD_PARTY_LIBS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "django_filters",
     "drf_spectacular",
     "drf_spectacular_sidecar",
     "debug_toolbar",
-    "cars",
-    "core",
-    "comments",
     "mptt",
     "django_extensions",
 ]
+
+INSTALLED_APPS = DEFAULT_DJANGO + PROJECT_APPS + THIRD_PARTY_LIBS
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
