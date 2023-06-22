@@ -2,11 +2,11 @@ import base64
 import uuid
 
 import six
+from cars.models import Brand, Car, CarImage, Model
+from comments.serializers import RetrieveCommentSerializer
+from core.serializers import UserSerializer
 from django.core.files.base import ContentFile
 from rest_framework import serializers
-
-from cars.models import Brand, Car, CarImage, Model
-from core.serializers import UserSerializer
 
 
 class ModelSerializer(serializers.ModelSerializer):
@@ -36,6 +36,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class CarSerializer(serializers.ModelSerializer):
+    comments = RetrieveCommentSerializer(read_only=True, many=True)
     is_favourite = serializers.SerializerMethodField()
     brand = CarBrandSerializer()
     model = ModelSerializer()
@@ -46,6 +47,7 @@ class CarSerializer(serializers.ModelSerializer):
         model = Car
         fields = [
             "id",
+            "comments",
             "brand",
             "model",
             "created_at",
