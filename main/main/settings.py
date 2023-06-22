@@ -32,6 +32,9 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "cars",
     "core",
+    "comments",
+    "mptt",
+    "django_extensions",
 ]
 
 REST_FRAMEWORK = {

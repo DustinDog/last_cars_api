@@ -1,15 +1,15 @@
+from core.views import Healthcheck
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
-from core.views import Healthcheck
-
 api_urls = [
     path("healthcheck/", Healthcheck.as_view()),
     path("user/", include("core.urls")),
     path("", include("cars.urls")),
+    path("comment/", include("comments.urls")),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "docs/",
