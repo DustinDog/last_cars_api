@@ -1,13 +1,9 @@
 from cars.models import Car
 from cars.serializers import CarSerializer
 from core.send_email import send_email_varification
-from core.serializers import (
-    EmailUpdateSerializer,
-    PasswordUpdateSerializer,
-    UpdateUserProfileSerializer,
-    UserCreateSerializer,
-    UserProfileSerializer,
-)
+from core.serializers import (EmailUpdateSerializer, PasswordUpdateSerializer,
+                              UpdateUserProfileSerializer,
+                              UserCreateSerializer, UserProfileSerializer)
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse

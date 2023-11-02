@@ -1,11 +1,9 @@
 from comments.models import Comment
 from comments.permissions import isCommentOwner
-from comments.serializers import RetrieveCommentSerializer, WriteCommentSerializer
-from rest_framework.permissions import (
-    SAFE_METHODS,
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-)
+from comments.serializers import (RetrieveCommentSerializer,
+                                  WriteCommentSerializer)
+from rest_framework.permissions import (SAFE_METHODS, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.viewsets import ModelViewSet
 
 

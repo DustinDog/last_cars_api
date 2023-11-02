@@ -1,9 +1,8 @@
 import enum
 
+from cars.utils import build_path
 from django.contrib.auth import get_user_model
 from django.db import models
-
-from cars.utils import build_path
 
 
 class ConditionChoices(enum.Enum):

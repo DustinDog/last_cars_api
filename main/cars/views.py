@@ -1,21 +1,14 @@
 from cars.filters import CarFilter
 from cars.models import Brand, Car, Model
 from cars.permissions import IsCarOwner
-from cars.serializers import (
-    BrandSerializer,
-    CarCreateUpdateSerializer,
-    CarSerializer,
-    ModelSerializer,
-)
+from cars.serializers import (BrandSerializer, CarCreateUpdateSerializer,
+                              CarSerializer, ModelSerializer)
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.permissions import (
-    SAFE_METHODS,
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-)
+from rest_framework.permissions import (SAFE_METHODS, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 

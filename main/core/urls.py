@@ -1,12 +1,6 @@
-from core.views import (
-    ActivateUserView,
-    CreateUserView,
-    EmailUpdateView,
-    FavouritesViewSet,
-    LoginView,
-    PasswordUpdateView,
-    UserProfileView,
-)
+from core.views import (ActivateUserView, CreateUserView, EmailUpdateView,
+                        FavouritesViewSet, LoginView, PasswordUpdateView,
+                        UserProfileView)
 from django.urls import path
 from rest_framework import routers
 

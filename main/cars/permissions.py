@@ -1,6 +1,5 @@
-from rest_framework.permissions import BasePermission
-
 from cars.models import Car
+from rest_framework.permissions import BasePermission
 
 
 class IsCarOwner(BasePermission):
