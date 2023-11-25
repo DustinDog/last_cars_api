@@ -14,7 +14,7 @@ SECRET_KEY = "django-insecure-pwbd0i+s=_e525gl*&f6i8&6ndf*iv2!^g3qm-bz3buo$5x#%(
 
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*", "127.0.0.0", "localhost", "0.0.0.0"]
 
 
 DEFAULT_DJANGO = [
@@ -100,12 +100,40 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "main.wsgi.application"
 
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "password",
+        "HOST": "db",
+        "PORT": 5432,
+        "CONN_MAX_AGE": 600,
+    }
+}
+
+# b = {
+#     "default": dj_database_url.parse(
+#         os.environ.get("DATABASE_URL"),
+#         conn_max_age=600,
+#         conn_health_checks=True,
+#     )
+# }
+
+# for k, v in a["default"].items():
+#     if a["default"][k] == b["default"][k]:
+#         del b["default"][k]
+# print("*****" * 10)
+# print(b)
+
+
+# print(a)
 
 DATABASES = {
     "default": dj_database_url.parse(
         os.environ.get("DATABASE_URL"),
         conn_max_age=600,
-        conn_health_checks=True,
+        # conn_health_checks=True,
     )
 }
 
@@ -147,13 +175,13 @@ CSRF_TRUSTED_ORIGINS = ["https://lobster-app-ku5vy.ondigitalocean.app"]
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 
-EMAIL_HOST = os.environ.get("EMAIL_HOST"),
-EMAIL_PORT = os.environ.get("EMAIL_PORT"),
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER"),
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD"),
-EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS"),
-EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL"),
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL"),
+EMAIL_HOST = (os.environ.get("EMAIL_HOST"),)
+EMAIL_PORT = (os.environ.get("EMAIL_PORT"),)
+EMAIL_HOST_USER = (os.environ.get("EMAIL_HOST_USER"),)
+EMAIL_HOST_PASSWORD = (os.environ.get("EMAIL_HOST_PASSWORD"),)
+EMAIL_USE_TLS = (os.environ.get("EMAIL_USE_TLS"),)
+EMAIL_USE_SSL = (os.environ.get("EMAIL_USE_SSL"),)
+DEFAULT_FROM_EMAIL = (os.environ.get("DEFAULT_FROM_EMAIL"),)
 
 PASSWORD_RESET_TIMEOUT = 60 * 60
 

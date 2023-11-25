@@ -1,20 +1,20 @@
 version: "3.9"
 services:
   db:
-    image: postgres
+    image: postgres:latest
     restart: always
     networks:
       - main
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data/
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
       - POSTGRES_URL=postgres://postgres:password@db:5432/postgres 
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
-    container_name: db
+    # container_name: my_db
 
   web:
     build: .
@@ -29,9 +29,11 @@ services:
     command: python main/manage.py runserver 0.0.0.0:8000
     container_name: api
 
+
+
 volumes:
   web:
-
+  postgres_data:
 networks:
   main:
     name: main
